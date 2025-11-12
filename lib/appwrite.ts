@@ -55,19 +55,31 @@ export const signIn = async ({ email, password }: SignInParams) => {
     try {
       const currentSession = await account.getSession("current");
       if (currentSession) {
-        console.log("A session is already active:", currentSession);
-        return currentSession; // Prevents duplicate session error
+        // Delete the existing session first to allow fresh login
+        await account.deleteSession("current");
+        console.log("Existing session deleted, creating new session");
       }
     } catch {
-      // No active session, continue
+      // No active session, continue with login
+      console.log("No existing session found, proceeding with login");
     }
 
-    // Create a new session only if none exists
+    // Create a new session
     const session = await account.createEmailPasswordSession(email, password);
-    console.log("New session created:", session);
+    console.log("New session created successfully");
     return session;
-  } catch (e) {
-    throw new Error(e as string);
+  } catch (e: any) {
+    throw new Error(e.message || String(e));
+  }
+};
+
+/* ---------------------- SIGN OUT ---------------------- */
+export const signOut = async () => {
+  try {
+    await account.deleteSession("current");
+    console.log("User signed out successfully");
+  } catch (e: any) {
+    throw new Error(e.message || String(e));
   }
 };
 
@@ -83,7 +95,26 @@ export const getCurrentUser = async () => {
       [Query.equal("accountId", currentAccount.$id)]
     );
 
-    if (!currentUser || !currentUser.documents.length) throw Error("User not found in database");
+    // If user document doesn't exist, create it
+    if (!currentUser || !currentUser.documents.length) {
+      console.log("User document not found, creating new user document");
+      
+      const avatarUrl = avatars.getInitialsURL(currentAccount.name);
+      
+      const newUserDoc = await databases.createDocument(
+        appwriteConfig.databaseId,
+        appwriteConfig.userCollectionId,
+        ID.unique(),
+        { 
+          email: currentAccount.email, 
+          name: currentAccount.name, 
+          accountId: currentAccount.$id, 
+          avatar: avatarUrl 
+        }
+      );
+      
+      return newUserDoc;
+    }
 
     return currentUser.documents[0];
   } catch (e: any) {
