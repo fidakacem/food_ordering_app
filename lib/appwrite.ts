@@ -32,7 +32,8 @@ export const createUser = async ({ email, password, name }: CreateUserParams) =>
     const newAccount = await account.create(ID.unique(), email, password, name);
     if (!newAccount) throw Error("Account creation failed");
 
-    // No signIn needed — Appwrite auto-logs in the new user
+    // Create a session for the new user
+    await account.createEmailPasswordSession(email, password);
 
     const avatarUrl = avatars.getInitialsURL(name);
 
@@ -41,7 +42,6 @@ export const createUser = async ({ email, password, name }: CreateUserParams) =>
       appwriteConfig.userCollectionId,
       ID.unique(),
       { email, name, accountId: newAccount.$id, avatar: avatarUrl }
-      // No permissions needed because collection allows all users full CRUD
     );
   } catch (e: any) {
     throw new Error(e.message || String(e));
