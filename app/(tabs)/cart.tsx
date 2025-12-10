@@ -40,22 +40,22 @@ const Cart = () => {
                             </Text>
 
                             <PaymentInfoStripe
-                                label={`Total Items (${totalItems})`}
-                                value={`$${totalPrice.toFixed(2)}`}
+                                label={`Total Items ({totalItems})`}
+                                value={`${totalPrice.toFixed(2)} TND`}
                             />
                             <PaymentInfoStripe
                                 label={`Delivery Fee`}
-                                value={`$5.00`}
+                                value={` 5.00 TND`}
                             />
                             <PaymentInfoStripe
                                 label={`Discount`}
-                                value={`- $0.50`}
+                                value={`- 0.50 TND`}
                                 valueStyle="!text-success"
                             />
                             <View className="border-t border-gray-300 my-2" />
                             <PaymentInfoStripe
                                 label={`Total`}
-                                value={`$${(totalPrice + 5 - 0.5).toFixed(2)}`}
+                                value={`${(totalPrice + 5 - 0.5).toFixed(2)} TND`}
                                 labelStyle="base-bold !text-dark-100"
                                 valueStyle="base-bold !text-dark-100 !text-right"
                             />

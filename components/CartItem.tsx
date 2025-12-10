@@ -19,8 +19,8 @@ const CartItem = ({ item }: { item: CartItemType }) => {
 
                 <View>
                     <Text className="base-bold text-dark-100">{item.name}</Text>
-                    <Text className="paragraph-bold text-primary mt-1">
-                        ${item.price}
+                    <Text className="paragraph-bold text-primary mt-1"> 
+                        {item.price} TND
                     </Text>
 
                     <View className="flex flex-row items-center gap-x-4 mt-2">
