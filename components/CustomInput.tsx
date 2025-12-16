@@ -11,7 +11,7 @@ const CustomInput = ({
     secureTextEntry = false,
     keyboardType="default"
 }: CustomInputProps) => {
-    const [isFocused, setIsFocused] = useState(false);
+    const [isFocused, setIsFocused] = useState(false); // état pour savoir si input est focus
 
 
     return (

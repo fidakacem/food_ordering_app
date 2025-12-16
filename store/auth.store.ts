@@ -1,18 +1,20 @@
-import { create } from 'zustand';
-import {User} from "@/type";
-import {getCurrentUser, signOut} from "@/lib/appwrite";
 
+import { create } from 'zustand';
+import { User } from "@/type";
+import { getCurrentUser, signOut } from "@/lib/appwrite";
+
+// Zustand store pour auth
 type AuthState = {
-    isAuthenticated: boolean;
-    user: User | null;
-    isLoading: boolean;
+    isAuthenticated: boolean; // si connecté
+    user: User | null; // info utilisateur
+    isLoading: boolean; // loader global
 
     setIsAuthenticated: (value: boolean) => void;
     setUser: (user: User | null) => void;
     setLoading: (loading: boolean) => void;
 
-    fetchAuthenticatedUser: () => Promise<void>;
-    signOutUser: () => Promise<void>;
+    fetchAuthenticatedUser: () => Promise<void>; // fetch user courant
+    signOutUser: () => Promise<void>; // logout
 }
 
 const useAuthStore = create<AuthState>((set) => ({
@@ -29,12 +31,11 @@ const useAuthStore = create<AuthState>((set) => ({
 
         try {
             const user = await getCurrentUser();
-
             if(user) set({ isAuthenticated: true, user: user as User })
-            else set( { isAuthenticated: false, user: null } );
+            else set({ isAuthenticated: false, user: null });
         } catch (e) {
             console.log('fetchAuthenticatedUser error', e);
-            set({ isAuthenticated: false, user: null })
+            set({ isAuthenticated: false, user: null });
         } finally {
             set({ isLoading: false });
         }
@@ -44,7 +45,7 @@ const useAuthStore = create<AuthState>((set) => ({
         set({isLoading: true});
 
         try {
-            await signOut();
+            await signOut(); // Appwrite logout
             set({ isAuthenticated: false, user: null });
         } catch (e) {
             console.log('signOutUser error', e);

@@ -1,30 +1,25 @@
-import {SplashScreen, Stack} from "expo-router";
+import { SplashScreen, Stack } from "expo-router";
+// SplashScreen → écran de chargement initial
+// Stack → navigation stack (pages avec header)
+
 import { useFonts } from 'expo-font';
-import { useEffect} from "react";
+// useFonts → hook pour charger des polices personnalisées
+
+import { useEffect } from "react";
+// useEffect → hook pour gérer les effets de bord (fetch, chargement, etc.)
 
 import './globals.css';
-import * as Sentry from '@sentry/react-native';
+// CSS global pour l'application
+
 import useAuthStore from "@/store/auth.store";
+// store d'authentification : gérer l'utilisateur connecté et les actions liées
 
-Sentry.init({
-  dsn: 'https://94edd17ee98a307f2d85d750574c454a@o4506876178464768.ingest.us.sentry.io/4509588544094208',
-
-  // Adds more context data to events (IP address, cookies, user, etc.)
-  // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
-  sendDefaultPii: true,
-
-  // Configure Session Replay
-  replaysSessionSampleRate: 1,
-  replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
-
-  // uncomment the line below to enable Spotlight (https://spotlightjs.com)
-  // spotlight: __DEV__,
-});
-
-export default Sentry.wrap(function RootLayout() {
+// RootLayout : layout principal de l'application
+export default function RootLayout() {
   const { isLoading, fetchAuthenticatedUser } = useAuthStore();
+  // Récupère l'état de chargement et la fonction pour fetcher l'utilisateur connecté
 
+  // Chargement des polices personnalisées
   const [fontsLoaded, error] = useFonts({
     "QuickSand-Bold": require('../assets/fonts/Quicksand-Bold.ttf'),
     "QuickSand-Medium": require('../assets/fonts/Quicksand-Medium.ttf'),
@@ -33,16 +28,20 @@ export default Sentry.wrap(function RootLayout() {
     "QuickSand-Light": require('../assets/fonts/Quicksand-Light.ttf'),
   });
 
+  // Effet pour cacher le splash screen quand les polices sont chargées
   useEffect(() => {
-    if(error) throw error;
-    if(fontsLoaded) SplashScreen.hideAsync();
+    if (error) throw error;
+    if (fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded, error]);
 
+  // Effet pour récupérer l'utilisateur connecté au montage
   useEffect(() => {
-    fetchAuthenticatedUser()
+    fetchAuthenticatedUser();
   }, []);
 
-  if(!fontsLoaded || isLoading) return null;
+  // Si les polices ne sont pas chargées ou si l'authentification est en cours → ne rien afficher
+  if (!fontsLoaded || isLoading) return null;
 
+  // Retourne le Stack principal pour la navigation, sans header
   return <Stack screenOptions={{ headerShown: false }} />;
-});
+}

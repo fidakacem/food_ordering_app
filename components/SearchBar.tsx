@@ -5,16 +5,16 @@ import { Image, TextInput, TouchableOpacity, View } from "react-native";
 
 const Searchbar = () => {
     const params = useLocalSearchParams<{ query: string }>();
-    const [query, setQuery] = useState(params.query);
+    const [query, setQuery] = useState(params.query); // état local pour le texte
 
     const handleSearch = (text: string) => {
         setQuery(text);
 
-        if(!text) router.setParams({ query: undefined });
+        if(!text) router.setParams({ query: undefined }); // efface le param query si vide
     };
 
     const handleSubmit = () => {
-        if(query.trim()) router.setParams({ query });
+        if(query.trim()) router.setParams({ query }); // met à jour les params pour la recherche
     }
 
     return (

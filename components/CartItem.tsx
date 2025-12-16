@@ -1,13 +1,15 @@
-import { useCartStore } from "@/store/cart.store";
-import { CartItemType } from "@/type";
+// CartItem.tsx
+import { useCartStore } from "@/store/cart.store"; // hook Zustand pour accéder au panier
+import { CartItemType } from "@/type"; // type des items du panier
 import { Image, Text, TouchableOpacity, View } from "react-native";
-import {images} from "@/constants";
+import { images } from "@/constants"; // constantes d'images (plus, minus, trash)
 
 const CartItem = ({ item }: { item: CartItemType }) => {
-    const { increaseQty, decreaseQty, removeItem } = useCartStore();
+    const { increaseQty, decreaseQty, removeItem } = useCartStore(); // fonctions pour gérer la quantité et suppression
 
     return (
         <View className="cart-item">
+            {/* Ligne principale: image + infos */}
             <View className="flex flex-row items-center gap-x-3">
                 <View className="cart-item__image">
                     <Image
@@ -23,9 +25,11 @@ const CartItem = ({ item }: { item: CartItemType }) => {
                         {item.price} TND
                     </Text>
 
+                    {/* Actions quantité */}
                     <View className="flex flex-row items-center gap-x-4 mt-2">
+                        {/* Diminuer quantité */}
                         <TouchableOpacity
-                            onPress={() => decreaseQty(item.id, item.customizations!)}
+                            onPress={() => decreaseQty(item.id)}
                             className="cart-item__actions"
                         >
                             <Image
@@ -38,8 +42,9 @@ const CartItem = ({ item }: { item: CartItemType }) => {
 
                         <Text className="base-bold text-dark-100">{item.quantity}</Text>
 
+                        {/* Augmenter quantité */}
                         <TouchableOpacity
-                            onPress={() => increaseQty(item.id, item.customizations!)}
+                            onPress={() => increaseQty(item.id)}
                             className="cart-item__actions"
                         >
                             <Image
@@ -53,8 +58,9 @@ const CartItem = ({ item }: { item: CartItemType }) => {
                 </View>
             </View>
 
+            {/* Bouton supprimer */}
             <TouchableOpacity
-                onPress={() => removeItem(item.id, item.customizations!)}
+                onPress={() => removeItem(item.id)}
                 className="flex-center"
             >
                 <Image source={images.trash} className="size-5" resizeMode="contain" />

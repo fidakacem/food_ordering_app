@@ -1,35 +1,48 @@
+//Composants de base UI
 import {View, Text, Button, Alert} from 'react-native'
+/*Link : navigation par lien,
+ router : navigation programmée (redirect).*/
 import {Link, router} from "expo-router";
 import CustomInput from "@/components/CustomInput";
 import CustomButton from "@/components/CustomButton";
+//Hook pour gérer l’état du formulaire.
 import {useState} from "react";
+//Fonction qui envoie la requête login à Appwrite.
 import {signIn} from "@/lib/appwrite";
+//Zustand pour stocker l’utilisateur connecté.
 import useAuthStore from "@/store/auth.store";
-import * as Sentry from '@sentry/react-native'
+//Utilisé pour tracker les erreurs
+
 
 const SignIn = () => {
+    //Pour afficher un loading pendant que la requête s’exécute.
     const [isSubmitting, setIsSubmitting] = useState(false);
+    //Contenu du formulaire.
     const [form, setForm] = useState({ email: '', password: '' });
+    //Fonction pour récupérer l’utilisateur connecté .
     const { fetchAuthenticatedUser } = useAuthStore();
 
     const submit = async () => {
         const { email, password } = form;
-
+        // Validation simple
         if(!email || !password) return Alert.alert('Error', 'Please enter valid email address & password.');
-
+        // Active le loading
         setIsSubmitting(true)
 
         try {
+            // Appwrite : connexion
             await signIn({ email, password });
             
-            // Update auth store state after successful login
+            // Update auth store state after successful login: // Récupère le user 
             await fetchAuthenticatedUser();
-
+            // // Redirige vers la page d'accueil
             router.replace('/');
         } catch(error: any) {
+            // Affiche l'erreur
             Alert.alert('Error', error.message);
-            Sentry.captureEvent(error);
+            
         } finally {
+            // Désactive loading
             setIsSubmitting(false);
         }
     }

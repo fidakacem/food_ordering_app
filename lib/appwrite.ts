@@ -1,6 +1,6 @@
 import { Account, Avatars, Client, Databases, ID, Query, Storage } from "react-native-appwrite";
 import { CreateUserParams, GetMenuParams, SignInParams } from "@/type";
-
+// Configuration Appwrite
 export const appwriteConfig = {
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
   projectId: process.env.EXPO_PUBLIC_APPWRITE_PROJECT_ID!,
@@ -14,6 +14,7 @@ export const appwriteConfig = {
   menuCustomizationsCollectionId: "menu_customizations",
 };
 
+// Initialisation Appwrite
 export const client = new Client();
 
 client

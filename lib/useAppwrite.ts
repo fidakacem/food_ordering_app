@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from "react";
 import { Alert } from "react-native";
 
+// Hook générique pour appeler des fonctions Appwrite
 interface UseAppwriteOptions<T, P extends Record<string, string | number>> {
     fn: (params: P) => Promise<T>;
     params?: P;
-    skip?: boolean;
+    skip?: boolean; // si true, ne pas lancer automatiquement
 }
 
 interface UseAppwriteReturn<T, P> {
@@ -29,7 +30,7 @@ const useAppwrite = <T, P extends Record<string, string | number>>({
             setError(null);
 
             try {
-                const result = await fn({ ...fetchParams });
+                const result = await fn({ ...fetchParams });  // appel API Appwrite
                 setData(result);
             } catch (err: unknown) {
                 const errorMessage =

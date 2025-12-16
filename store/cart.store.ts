@@ -1,95 +1,67 @@
-import { CartCustomization, CartStore } from "@/type";
-import { create } from "zustand";
+import { CartStore } from "@/type"; // TypeScript : type du store
+import { create } from "zustand"; // Zustand : création du store
 
-function areCustomizationsEqual(
-    a: CartCustomization[] = [],
-    b: CartCustomization[] = []
-): boolean {
-    if (a.length !== b.length) return false;
-
-    const aSorted = [...a].sort((x, y) => x.id.localeCompare(y.id));
-    const bSorted = [...b].sort((x, y) => x.id.localeCompare(y.id));
-
-    return aSorted.every((item, idx) => item.id === bSorted[idx].id);
-}
-
+// Création du store du panier
 export const useCartStore = create<CartStore>((set, get) => ({
-    items: [],
+    items: [], // Tableau initial des items dans le panier
 
+    // Ajouter un item au panier
     addItem: (item) => {
-        const customizations = item.customizations ?? [];
-
-        const existing = get().items.find(
-            (i) =>
-                i.id === item.id &&
-                areCustomizationsEqual(i.customizations ?? [], customizations)
-        );
+        // Vérifie si l'item existe déjà dans le panier
+        const existing = get().items.find((i) => i.id === item.id);
 
         if (existing) {
+            // Si l'item existe déjà, on augmente seulement la quantité
             set({
                 items: get().items.map((i) =>
-                    i.id === item.id &&
-                    areCustomizationsEqual(i.customizations ?? [], customizations)
-                        ? { ...i, quantity: i.quantity + 1 }
+                    i.id === item.id
+                        ? { ...i, quantity: i.quantity + 1 } // Augmente la quantité
                         : i
                 ),
             });
         } else {
+            // Sinon, on ajoute le nouvel item avec quantity = 1
             set({
-                items: [...get().items, { ...item, quantity: 1, customizations }],
+                items: [...get().items, { ...item, quantity: 1 }],
             });
         }
     },
 
-    removeItem: (id, customizations = []) => {
+    // Supprimer un item complètement du panier
+    removeItem: (id) => {
         set({
-            items: get().items.filter(
-                (i) =>
-                    !(
-                        i.id === id &&
-                        areCustomizationsEqual(i.customizations ?? [], customizations)
-                    )
-            ),
+            items: get().items.filter((i) => i.id !== id), // Filtre tous les items sauf celui avec l'id correspondant
         });
     },
 
-    increaseQty: (id, customizations = []) => {
+    // Augmenter la quantité d'un item
+    increaseQty: (id) => {
         set({
             items: get().items.map((i) =>
-                i.id === id &&
-                areCustomizationsEqual(i.customizations ?? [], customizations)
-                    ? { ...i, quantity: i.quantity + 1 }
-                    : i
+                i.id === id ? { ...i, quantity: i.quantity + 1 } : i
             ),
         });
     },
 
-    decreaseQty: (id, customizations = []) => {
+    // Diminuer la quantité d'un item
+    decreaseQty: (id) => {
         set({
             items: get()
                 .items.map((i) =>
-                    i.id === id &&
-                    areCustomizationsEqual(i.customizations ?? [], customizations)
-                        ? { ...i, quantity: i.quantity - 1 }
-                        : i
+                    i.id === id ? { ...i, quantity: i.quantity - 1 } : i
                 )
-                .filter((i) => i.quantity > 0),
+                .filter((i) => i.quantity > 0), // Supprime l'item si la quantité tombe à 0
         });
     },
 
+    // Vider complètement le panier
     clearCart: () => set({ items: [] }),
 
+    // Calculer le nombre total d'items dans le panier
     getTotalItems: () =>
         get().items.reduce((total, item) => total + item.quantity, 0),
 
+    // Calculer le prix total du panier
     getTotalPrice: () =>
-        get().items.reduce((total, item) => {
-            const base = item.price;
-            const customPrice =
-                item.customizations?.reduce(
-                    (s: number, c: CartCustomization) => s + c.price,
-                    0
-                ) ?? 0;
-            return total + item.quantity * (base + customPrice);
-        }, 0),
+        get().items.reduce((total, item) => total + item.quantity * item.price, 0),
 }));

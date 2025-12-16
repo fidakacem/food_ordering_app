@@ -5,10 +5,12 @@ import {useCartStore} from "@/store/cart.store";
 import {router} from "expo-router";
 
 const CartButton = () => {
+    //Nombre total d’items: getTotalItems() additionne toutes les quantités
     const { getTotalItems } = useCartStore();
     const totalItems = getTotalItems();
 
     return (
+        //Affichage du bouton : Navigue vers /cart quand on clique
         <TouchableOpacity className="cart-btn" onPress={()=> router.push('/cart')}>
             <Image source={images.bag} className="size-5" resizeMode="contain" />
 
